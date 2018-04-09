@@ -14,7 +14,7 @@ int main(void)
     vhdd Hdd; 
     int c=0,len,p=0;
     char **str;
-    int no,nbs;
+    int no,nbs,i;
     while(1)
     {
         fprintf(stdout,"\n\t1) Create virtual Disk : ");     
@@ -45,9 +45,9 @@ int main(void)
                         fprintf(stdout,"\n\t Virtual Disk Already Present");
                     
                     break;
-            case 2:
-               metadata(Hdd,"MYName is khan im ok not ok jadu haha");                   
-                // metadata(Hdd,"Computer science is the study of the theory, experimentation, and engineering that form the basis for the design and use of computers. It is the scientific and practical approach to computation and its applications and the systematic study of the feasibility, structure, expression, and mechanization of the methodical procedures (or algorithms) that underlie the acquisition, representation, processing, storage, communication of, and access to, information. An alternate, more succinct definition of computer science is the study of automating algorithmic processes that scale. A computer scientist specializes in the theory of computation and the design of computational systems");
+            case 2:for(i=0;i<1000;i++){
+            //  metadata(Hdd,"MYName is khan im ok not ok jadu haha");                   
+                 metadata(Hdd,"Computer science is the study of the theory, experimentation, and engineering that form the basis for the design and use of computers. It is the scientific and practical approach to computation and its applications and the systematic study of the feasibility, structure, expression, and mechanization of the methodical procedures (or algorithms) that underlie the acquisition, representation, processing, storage, communication of, and access to, information. An alternate, more succinct definition of computer science is the study of automating algorithmic processes that scale. A computer scientist specializes in the theory of computation and the design of computational systems");}
                     /*
                     c=0;
                     nbs = Hdd.nbs;
