@@ -210,7 +210,7 @@ void deletename(vhdd v,char *name)
         result = 0;
      result=deletenamesub(bno,subbloc,v,&ii,name);
     fprintf(stdout,"\n result %d \n",result);
-    return;
+   // return;
     }
   // printbuff(v);
      i =i+8;
@@ -422,7 +422,7 @@ void insertnameadd(vhdd *v,int sublock,int wblock,int bno1,int bno)
 }
 int writeblock(int bno,vhdd v)
 {
-    fprintf(stdout,"\n writing to bno %d\n",bno);
+   // fprintf(stdout,"\n writing to bno %d\n",bno);
     fseek(v.fp,bno*(v.blocksize),SEEK_SET);
     fwrite(v.buff,1,(v.blocksize),v.fp);
     fflush(v.fp);
@@ -433,7 +433,7 @@ int name1(vhdd v,char ***nmstr,int *len,int *bno,int *c,int *lbno)
     int p =  name(&(v),&(*nmstr),&(*len),&(*bno),&(*c),&(*lbno));
    writeblock(*bno,v);
  //  printbuff(v);
-  fprintf(stdout,"\nwriting %d\n",*bno);
+ // fprintf(stdout,"\nwriting %d\n",*bno);
     return p;//need to allocate new structure
 }
 int name(vhdd *v,char ***nmstr,int *len,int *bno,int *c,int *lbno) 
@@ -450,7 +450,7 @@ int name(vhdd *v,char ***nmstr,int *len,int *bno,int *c,int *lbno)
     else
     {
         p=findfreenameblock(&(*v));
-      fprintf(stdout,"\np %d\n",p);
+     // fprintf(stdout,"\np %d\n",p);
         if(p)
         {
             j=(*c);
@@ -471,6 +471,7 @@ int name(vhdd *v,char ***nmstr,int *len,int *bno,int *c,int *lbno)
             hex[2] = (*v).buff[(*v).nbsize-2] ;
             hex[3] = (*v).buff[(*v).nbsize-1] ;
             *bno= hextoint(hex);
+            fprintf(stdout,"\nbno %d \n",*bno);
          //    fprintf(stdout,"\nnot free %d\n",*bno);
           //   fprintf(stdout,"\nhex[0] %d\n",hex[0]);
            //  fprintf(stdout,"\nhex[1] %d\n",hex[1]);
@@ -552,9 +553,20 @@ void setblockfree(vhdd v,long int block)
             start = (int)(start + (v.blocksize*8));
     }
 }
-void setusedblock(vhdd v,long int block)
+/*
+void setusedblock(vhdd v,int block)
 {
     
+    float noblock = v.filesize/v.blocksize;//1048576
+    int start = (int)(noblock/(v.blocksize*8))+1;
+    int bno = block/8;
+
+    
+}*/
+
+void setusedblock(vhdd v,long int block)
+{
+/*    
     float noblock = (float)(v.filesize/v.blocksize);
     int start = (int)(ceil((noblock/(v.blocksize*8)))+1),mn=(int)start;
     unsigned char buff[v.blocksize];
@@ -584,33 +596,32 @@ void setusedblock(vhdd v,long int block)
         else
             start =(int)( start + (v.blocksize*8));
     }
-
+*/
 }
 unsigned long getfirstemptyblockpos(vhdd v)
 {
-    int i=0;
+    int i=0,k=0;
 
        int noblock = (v.filesize/v.blocksize);
     float tblesize = ceil((noblock/(v.blocksize*8)));
     unsigned long fbn=tblesize+1;
-    unsigned char buff[v.blocksize];
-    fseek(v.fp,1024,SEEK_SET);
     while(tblesize--)
     {
-        for(i=0;i<v.blocksize;i++)
-            buff[i]=(unsigned char)fgetc(v.fp);
-
+        k++;
+        readblock(k,&v);
         for(i=0;i<v.blocksize;i++)
         {
-            if((int)buff[i]<255)
+            if((int)v.buff[i]<255)
             {
                 int j,p=1;
                 for(j=0;j<8;j++)
                 {
-                    p = buff[i] & 1<<j;
+                    p = v.buff[i] & 1<<j;
                     if(p==0)
                     {
+                        v.buff[i] = v.buff[i]| 1<<j;
                         fbn+=(j+1);
+                       writeblock(k,v);
                         return fbn;
                     }
                 }
