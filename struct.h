@@ -7,7 +7,7 @@ struct vhdd
     FILE *fp;
     int smb;/*startting of metadata block data*/
     int sb;/*start of data block*/
-    unsigned char buff[1024];
+    unsigned char buff[1024];/*need Allocate Dynamically*/
     int nbsize;//name block block size
     int nbnb;//name block number of block
     int mtds;/*block from meta data started*/

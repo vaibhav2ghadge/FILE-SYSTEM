@@ -18,6 +18,9 @@ int main(void)
     while(1)
     {
         fprintf(stdout,"\n\t1) Create virtual Disk : ");     
+        fprintf(stdout,"\n\t2) Insert Name As Long As Possible (: :  ");     
+        fprintf(stdout,"\n\t4) DELETE Name");
+        fprintf(stdout,"\n\t 6) PRINT NAME ");
         fscanf(stdin,"%d",&ch1);
         switch(ch1)
         {
@@ -43,8 +46,8 @@ int main(void)
                     
                     break;
             case 2:
-                   // metadata(Hdd,"design of computational systems ok google im here now jadu im jadu hahah joker happy joker day");                   
-                     metadata(Hdd,"Computer science is the study of the theory, experimentation, and engineering that form the basis for the design and use of computers. It is the scientific and practical approach to computation and its applications and the systematic study of the feasibility, structure, expression, and mechanization of the methodical procedures (or algorithms) that underlie the acquisition, representation, processing, storage, communication of, and access to, information. An alternate, more succinct definition of computer science is the study of automating algorithmic processes that scale. A computer scientist specializes in the theory of computation and the design of computational systems");
+               metadata(Hdd,"MYName is khan im ok not ok jadu haha");                   
+                // metadata(Hdd,"Computer science is the study of the theory, experimentation, and engineering that form the basis for the design and use of computers. It is the scientific and practical approach to computation and its applications and the systematic study of the feasibility, structure, expression, and mechanization of the methodical procedures (or algorithms) that underlie the acquisition, representation, processing, storage, communication of, and access to, information. An alternate, more succinct definition of computer science is the study of automating algorithmic processes that scale. A computer scientist specializes in the theory of computation and the design of computational systems");
                     /*
                     c=0;
                     nbs = Hdd.nbs;
@@ -58,14 +61,21 @@ int main(void)
                    // printbuff(Hdd);
                    //  metadata(Hdd,"ter limit is 280.Snapchat's caption character limit is 80.character limithghghjj");*/
                    break;
-            case 3: exit(0);
+            case 3: 
+            case 5: exit(0);
                     break;
             case ' ':
                     break;
-            case 4: printname(Hdd);
+            case 4:{
+                       char *name = "MYName is khan im ok not ok jadu haha";
+                    deletename(Hdd,name);
                     /*readblock(130,&Hdd);
                     printbuff(Hdd);*/
+                   }
                     break;
+            case 6:
+                        printname(Hdd);
+                        break;
             default : fprintf(stdout,"\n\tWrong choice: ");
         }
     }

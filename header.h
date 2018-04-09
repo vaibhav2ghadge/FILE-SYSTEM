@@ -18,5 +18,6 @@ void printbuff(vhdd);
 unsigned long nameblockinitialize(vhdd);
 int freeblocknm(vhdd,int);
 int metadataallocationtable(vhdd*);
+int deletenamesub(int,int,vhdd,int *,char *);
 int stringsplit(char *,char ***,int);
 void printnamesub(int,int,vhdd);

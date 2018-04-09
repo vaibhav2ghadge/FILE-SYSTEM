@@ -158,6 +158,124 @@ void printnamesub(int bno,int subno,vhdd v)
    //     fprintf(stdout,"\n");
     }
 }
+//for deleting section start here
+//for unset name block after delte
+int unsetnameblock(vhdd *v,int subno)
+{
+  fprintf(stdout,"\n before entire block %d\n",(*v).buff[0]);
+//    printbuff(*v);
+    int i,mod;
+    int bno = 0;
+    bno = subno /8;
+    mod = subno%8;
+    if(mod){
+    bno = bno +1;
+    mod = mod -1;
+    }
+    else
+        mod = 7;
+    bno-=1;
+  (*v).buff[bno] = (*v).buff[bno]^((*v).buff[bno] & 1<<mod);
+ // (*v).buff[0]=0x00;
+  //  printbuff(*v);
+  fprintf(stdout,"\n unseted bno %d bit %d\n",bno,mod);
+  fprintf(stdout,"\n after entire block %d\n",(*v).buff[0]);
+}
+
+void deletename(vhdd v,char *name)
+{
+    readblock(130,&v);
+    int i = (v.blocksize/8)/8,ii=0;
+    unsigned char block[4];
+    unsigned char subblock[4];
+    int bno,result;
+    int subbloc;
+    //    fprintf(stdout,"\n\t before before printing\n");
+  // printbuff(v);
+    for(i;i<v.blocksize;)
+    {
+        block[0] = v.buff[i-1];
+        block[1] = v.buff[i];
+        block[2] = v.buff[i+1];
+        block[3] = v.buff[i+2];
+        subblock[0]=v.buff[i+3];
+        subblock[1]=v.buff[i+4];
+        subblock[2]=v.buff[i+5];
+        subblock[3]=v.buff[i+6];
+     bno = hextoint(block);
+     subbloc = hextoint(subblock);
+    if((int)bno && (int)subbloc && subbloc<32)
+    {
+   fprintf(stdout,"\nbno %d sub %d\n",bno,subbloc);
+        result = 0;
+     result=deletenamesub(bno,subbloc,v,&ii,name);
+    fprintf(stdout,"\n result %d \n",result);
+    return;
+    }
+  // printbuff(v);
+     i =i+8;
+    }
+}
+int deletenamesub(int bno,int subno,vhdd v,int *ii,char *name)
+{
+    int i,j,t,jj,bno11;
+    unsigned char ch;
+    unsigned char ch1[4];
+    int bno1;
+    readblock(bno,&v);
+    while(1)
+    {
+        
+        for(i = (subno-1)*v.nbsize;i<(subno-1)*v.nbsize+v.nbsize-5 && name[*ii]!='\0' && v.buff[i]!='\0';i++)
+        {
+            fprintf(stdout,"%c %c",v.buff[i],name[*ii]);
+            if(name[*ii]!=v.buff[i])
+            {
+                fprintf(stdout,"\n retuening zero\n");
+                return 0;
+             }
+            *ii = *ii + 1;
+        }/*if one string smaller than other */
+        if((name[*ii]!='\0' && v.buff[i]=='\0' && v.buff[i]!=0) || (name[*ii]=='\0' && v.buff[i]!='\0'))
+        {
+            fprintf(stdout,"\n not match\n");
+            return 0;
+        }
+        ch = v.buff[v.nbsize*subno-5];
+        ch1[0] = v.buff[v.nbsize*subno-4];
+        ch1[1]=v.buff[v.nbsize*subno-3];
+        ch1[2]=v.buff[v.nbsize*subno-2];
+        ch1[3]=v.buff[v.nbsize*subno-1];
+        jj = subno;
+        bno11 = bno1;
+        j = hextoint(ch1);
+        bno1 = hextoint(ch1);
+        if((int)ch && (j>bno))
+        {
+            fprintf(stdout,"\ngoing under%d bno %d\n",ch,bno11);
+            t = deletenamesub(bno,(int)ch,v,ii,name);
+            if(t==1)
+            {
+                unsetnameblock(&v,jj);
+                writeblock(bno11,v);
+                return 1;
+             }
+            return 0;
+        }
+        else if((int)ch){
+        subno = (int)ch;
+        bno1 = bno11; 
+        unsetnameblock(&v,jj);
+        subno = (int)ch;
+         }
+        else
+        {
+            unsetnameblock(&v,jj);
+            writeblock(bno,v);
+            return 1;
+        }
+    }
+}
 int metadata1(vhdd v,int block,int sub,int bno)
 {
     unsigned char ch[4];
@@ -220,6 +338,7 @@ int freeblocknm(vhdd v,int b)
     }
     return 0;/*if block not free return */
 }
+
 int stringsplit(char *str,char ***result,int no)
 {
     int x = strlen(str)/no +1,i,k=0,j=0;
@@ -303,6 +422,7 @@ void insertnameadd(vhdd *v,int sublock,int wblock,int bno1,int bno)
 }
 int writeblock(int bno,vhdd v)
 {
+    fprintf(stdout,"\n writing to bno %d\n",bno);
     fseek(v.fp,bno*(v.blocksize),SEEK_SET);
     fwrite(v.buff,1,(v.blocksize),v.fp);
     fflush(v.fp);
@@ -504,23 +624,12 @@ unsigned long getfirstemptyblockpos(vhdd v)
 
 int createVHDD(unsigned long int fsize,unsigned long int bsize,vhdd *Hdd,char *fname)
 {
-    
    int s; 
     DIR *d;
     char fal[25];
     char f1[10];
     struct dirent *dir;
-    d = opendir(".");
-    if(d)
-    {
-        while ((dir = readdir(d)) != NULL)
-        {
-            if(!(strcmp(dir->d_name,fname)))
-                    return 2;
-        }
-        closedir(d);
-    }
-    strcpy(fal,"fallocate -l ");
+   /* strcpy(fal,"fallocate -l ");
     s = (int )fsize/(1024*1024*1024);
     fprintf(stdout,"%d\n",s);
     sprintf(f1,"%d",s);
@@ -529,6 +638,8 @@ int createVHDD(unsigned long int fsize,unsigned long int bsize,vhdd *Hdd,char *f
     strcat(fal,"G ");
     strcat(fal,fname);
     fprintf(stdout,"%s",fal);
+   */ 
+    
     (*Hdd).filesize = (long int)fsize;
     (*Hdd).blocksize =(long int) bsize;
     (*Hdd).smb = (bsize/8)/8;
