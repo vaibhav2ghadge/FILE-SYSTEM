@@ -1,5 +1,1 @@
-Virtual File System is File system created by using instead of using hard disk we use File as Hard disk we can put information,data into file.
-for handaling large type of data more efficiently we used linked list , tree ,stack such kind of data structure and algorithms
-In this file we created block of size 1kb to stored data
-fist 128 block reserverd for metadata which show us which block is empty in each this block devided into 1byte in 1 byte we can store 8 block information about they ematy or not because in every byte have 8bit if bit 1 then block is used if its 0 it is free
-
+File system created for storing data and manupulating data more efficiently by using Data Structure & Algorithms
